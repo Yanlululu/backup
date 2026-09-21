@@ -1,8 +1,8 @@
 # 多智能体追逃与防御项目备份
 
-保存于 2026-09-21。每个项目的默认版本放在 `main` 的独立目录中；原始提交历史保存在以项目名开头的独立分支中。分支指向原作者的同一个 Git 提交，目录的 Git tree 与对应原仓库一致，保留文件字节、路径大小写、文件模式、许可证和作者署名。
+保存于 2026-09-21。每个项目的默认版本放在 `main` 的独立目录中，完整上游历史保存在以项目名开头的分支中。Multi-UAV 的 `master`、`main`、`rebuttal` 分支及目录快照已追加子模块地址修复，两个依赖仍锁定原提交；根目录新增相应子模块映射。其余项目文件保持原样，各项目的许可证与作者署名保留。
 
-| 来源仓库 | 默认版本目录 | 原始历史分支 | 全部引用可达提交数 | 默认版本普通文件数 |
+| 来源仓库 | 默认版本目录 | 项目分支（保留原始历史） | 备份时上游全部引用可达提交数 | 默认版本普通文件数 |
 | --- | --- | --- | ---: | ---: |
 | [ARBoids](https://github.com/taojy687/ARBoids) | [ARBoids](ARBoids/) | [`arboids/main`](https://github.com/Yanlululu/backup/tree/arboids/main) | 5 | 182 |
 | [psto-aav-pursuit](https://github.com/HITSZ-MAS/psto-aav-pursuit) | [psto-aav-pursuit](psto-aav-pursuit/) | [`psto-aav-pursuit/main`](https://github.com/Yanlululu/backup/tree/psto-aav-pursuit/main) | 8 | 20 |
@@ -22,7 +22,7 @@
 
 原分支 `refs/heads/<branch>` 保存为本仓库的 `<项目名>/<branch>`；ARBoids 使用 `arboids/main`。五个来源仓库在备份时均没有公开标签。
 
-Multi-UAV 的全部分支为：
+Multi-UAV 的三个项目分支均已修复子模块地址，原始提交仍保留在历史中：
 
 - [`Multi-UAV-pursuit-evasion/master`](https://github.com/Yanlululu/backup/tree/Multi-UAV-pursuit-evasion/master)
 - [`Multi-UAV-pursuit-evasion/main`](https://github.com/Yanlululu/backup/tree/Multi-UAV-pursuit-evasion/main)
@@ -36,24 +36,34 @@ Multi-UAV 的全部分支为：
 git clone --single-branch --branch psto-aav-pursuit/main https://github.com/Yanlululu/backup.git psto-aav-pursuit
 git clone --single-branch --branch pursuitFSC2/main https://github.com/Yanlululu/backup.git pursuitFSC2
 git clone --single-branch --branch pursuitMatrixWorld/main https://github.com/Yanlululu/backup.git pursuitMatrixWorld
-git clone --single-branch --branch Multi-UAV-pursuit-evasion/master https://github.com/Yanlululu/backup.git Multi-UAV-pursuit-evasion
+git clone --recurse-submodules --single-branch --branch Multi-UAV-pursuit-evasion/master https://github.com/Yanlululu/backup.git Multi-UAV-pursuit-evasion
 ```
 
 上述 `--single-branch` 只限制获取哪个分支，不截断该分支的历史。如需本仓库全部分支，使用普通 `git clone`，不要添加 `--single-branch` 或 `--depth`。从 `main` 下载 ZIP 只包含目录快照和依赖包；Git 历史应通过克隆获取。
 
 ## Multi-UAV 的两个子模块
 
-原 `.gitmodules` 指向 `btx0424/rl` 与 `btx0424/tensordict`。备份时 `btx0424/rl` 返回 404，但指定的同一 TorchRL 提交仍存在于官方 `pytorch/rl`。以下两个 bundle 均包含固定版本及其完整祖先历史，可以在没有原作者仓库的情况下恢复：
+原 TorchRL 地址 `btx0424/rl` 已失效。现已将两个子模块统一切换到官方 HTTPS 仓库，免去 GitHub SSH 密钥配置；Git 锁定的版本保持原样：
 
-| 子模块 | 固定提交 | 下载来源 | 完整历史包 |
+| 子模块 | 固定提交 | 当前下载地址 | 完整历史备份包 |
 | --- | --- | --- | --- |
 | TorchRL | `e39e70122600961d5830aa29027a073c0d721268` | [pytorch/rl](https://github.com/pytorch/rl) | [_git_bundles/torchrl.bundle](_git_bundles/torchrl.bundle) |
-| TensorDict | `5e6205c2be7ebc75d1d0199f76fe7ff11f71d770` | [btx0424/tensordict](https://github.com/btx0424/tensordict) | [_git_bundles/tensordict.bundle](_git_bundles/tensordict.bundle) |
+| TensorDict | `5e6205c2be7ebc75d1d0199f76fe7ff11f71d770` | [pytorch/tensordict](https://github.com/pytorch/tensordict) | [_git_bundles/tensordict.bundle](_git_bundles/tensordict.bundle) |
 
-原始历史分支与目录快照中的 `.gitmodules` 保持原样。因此不要直接依赖其中已失效的地址执行递归克隆。以下命令适用于 Ubuntu/Bash；先把本仓库的 `main` 克隆到与 Multi-UAV 项目并列的 `backup` 目录：
+新克隆单个项目时，上面的 `--recurse-submodules` 命令会初始化两个子模块。整个 `backup` 的 `main` 也已添加根目录 `.gitmodules`，可以在克隆时使用 `--recurse-submodules`，将依赖放到 `Multi-UAV-pursuit-evasion/third_party/`。
+
+已有本仓库克隆，在其 Git 根目录执行以下命令以更新配置；`sync` 会把已经初始化过的子模块 URL 同步为新地址：
 
 ```bash
-git clone --single-branch --branch main https://github.com/Yanlululu/backup.git backup
+git pull --ff-only
+git submodule sync --recursive
+git submodule update --init --recursive
+git submodule status
+```
+
+如需从已保存的 bundle 恢复，仍可使用以下 Ubuntu/Bash 命令。这里假定单独克隆的 Multi-UAV 项目与本仓库 `main` 的 `backup` 目录并列，且 `backup/_git_bundles/` 已下载：
+
+```bash
 cd Multi-UAV-pursuit-evasion
 BUNDLE_DIR="$(cd ../backup/_git_bundles && pwd)"
 git submodule init
@@ -63,7 +73,7 @@ git -c protocol.file.allow=always submodule update --init --recursive
 git submodule status
 ```
 
-仅本地 `.git/config` 改用 bundle 地址，原 `.gitmodules` 不变。初始化完成后，两个子模块应分别处于上表的固定提交。`main/Multi-UAV-pursuit-evasion/third_party/` 保留原 gitlink；子模块内容保存在上述 bundle 中。
+bundle 包含上表固定版本及其完整祖先历史。项目目录中的 gitlink 继续固定同一提交；更换下载地址不会升级 TorchRL 或 TensorDict。
 
 ## 保存范围
 

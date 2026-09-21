@@ -1,0 +1,6 @@
+[submodule "Multi-UAV-pursuit-evasion/third_party/torchrl"]
+	path = Multi-UAV-pursuit-evasion/third_party/torchrl
+	url = https://github.com/pytorch/rl.git
+[submodule "Multi-UAV-pursuit-evasion/third_party/tensordict"]
+	path = Multi-UAV-pursuit-evasion/third_party/tensordict
+	url = https://github.com/pytorch/tensordict.git
