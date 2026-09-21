@@ -1,0 +1,43 @@
+# hydra.job.chdir: false
+
+headless: true
+use_local_usd: true
+
+sim: ${task.sim}
+env: ${task.env}
+
+model_dir: null
+load_history_dir: null
+
+total_frames: 30000_000_000 #1000_000_000
+max_iters: -1
+eval_interval: -1
+save_interval: 100
+seed: 0
+
+viewer:
+  resolution: [960, 720]
+  # up
+  eye: [-0.005, 0.0, 5.]
+  lookat: [0., 0., 1.]
+  # eye: [-2.5, 0.0, 2.]
+  # lookat: [0., 0.0, 0.1]
+
+wandb:
+  group: ${oc.select:..task.name}
+  run_name: debug
+  # run_name: smoothness40_final_evalwall
+  entity: chenjy
+  project: myproject
+  mode: disabled
+  # mode: online # set to 'disabled' when debugging locally, online
+  run_id: 
+  monitor_gym: True
+  tags:
+
+defaults:
+  - task: HideAndSeek # evaluation and baseline
+  # - task: HideAndSeek_envgen # adaptive env generator
+  # - task: HideAndSeek_deploy # two-stage reward refinement 
+  - algo: mappo
+  - _self_
